@@ -1,5 +1,4 @@
 <view class="container" style="padding-top: {{paddingTop}}px;">
-  
   <view class="user-header">
     <view class="user-basic-info">
       <view class="avatar-box">
@@ -16,10 +15,10 @@
     </view>
   </view>
 
-  <swiper 
-    class="member-swiper" 
-    current="{{currentSwiperIndex}}" 
-    previous-margin="30rpx" 
+  <swiper
+    class="member-swiper"
+    current="{{currentSwiperIndex}}"
+    previous-margin="30rpx"
     next-margin="30rpx"
     duration="500"
     bindchange="onSwiperChange"
@@ -27,9 +26,8 @@
     <block wx:for="{{levelList}}" wx:key="level">
       <swiper-item class="swiper-item-wrapper">
         <view class="member-card {{item.className}}">
-          
           <view class="card-bg-pattern"></view>
-          
+
           <view class="current-tag" wx:if="{{index === userLevelIndex}}">当前等级</view>
           <view class="lock-tag" wx:if="{{index > userLevelIndex}}">未解锁</view>
 
@@ -54,13 +52,12 @@
               <view class="prog-text" wx:else>尊贵身份，无与伦比</view>
             </view>
             <view wx:elif="{{index < userLevelIndex}}">
-               <view class="prog-text">您已超越该等级</view>
+              <view class="prog-text">您已超越该等级</view>
             </view>
-             <view wx:else>
-               <view class="prog-text">继续探索以解锁尊贵权益</view>
+            <view wx:else>
+              <view class="prog-text">继续探索以解锁尊贵权益</view>
             </view>
           </view>
-
         </view>
       </swiper-item>
     </block>
@@ -88,7 +85,7 @@
       <text class="section-title">我的订单</text>
       <view class="section-more">全部订单 <text class="arrow">›</text></view>
     </view>
-    
+
     <view class="order-icons-row">
       <view class="order-icon-item" bindtap="onGoToOrders" data-type="1">
         <view class="icon-emoji">💳</view>
@@ -121,13 +118,6 @@
       <view class="menu-left">
         <text class="menu-icon">🛍️</text>
         <text class="menu-text">我的购物袋</text>
-      </view>
-      <text class="arrow">›</text>
-    </view>
-    <view class="menu-item" bindtap="onGoToAdmin">
-      <view class="menu-left">
-        <text class="menu-icon">⚙️</text>
-        <text class="menu-text">后台管理 (Dev)</text>
       </view>
       <text class="arrow">›</text>
     </view>

@@ -1,4 +1,4 @@
-﻿// miniprogram/pages/user/user.ts
+// miniprogram/pages/user/user.ts
 import { PointManager } from '../../utils/pointManager';
 import { MemberManager } from '../../utils/memberManager';
 import { IAppOption } from '../../app';
@@ -94,7 +94,6 @@ Page({
     const type = e.currentTarget.dataset.type || 0;
     wx.navigateTo({ url: `/pages/orders/orders?type=${type}` });
   },
-  onGoToAdmin() { wx.navigateTo({ url: '/pages/admin/admin' }); },
   onMemberCode() {
     const levelName = this.data.levelList[this.data.userLevelIndex].name;
     wx.showToast({ title: `${levelName}会员码生成中...`, icon: 'none' });

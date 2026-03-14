@@ -1,4 +1,4 @@
-﻿import { OrderManager, OrderRecord, OrderStatus } from '../../utils/orderManager';
+import { OrderManager, OrderRecord, OrderStatus } from '../../utils/orderManager';
 
 function formatOrderTime(value: number | string) {
   const date = new Date(value);
@@ -71,11 +71,6 @@ Page({
     }));
 
     this.setData({ displayOrders });
-  },
-
-  onMarkShipped(e: WechatMiniprogram.TouchEvent) {
-    const orderId = Number(e.currentTarget.dataset.id);
-    this.updateOrderStatus(orderId, 2);
   },
 
   onConfirmReceipt(e: WechatMiniprogram.TouchEvent) {

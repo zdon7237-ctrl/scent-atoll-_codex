@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/devtools/devtools",
     "pages/index/index",
     "pages/category/category",
     "pages/brands/brands",

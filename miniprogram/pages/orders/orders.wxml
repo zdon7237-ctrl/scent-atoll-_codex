@@ -1,8 +1,8 @@
-﻿<view class="container">
+<view class="container">
   <scroll-view scroll-x class="tabs-nav" enable-flex>
-    <view 
-      wx:for="{{tabs}}" 
-      wx:key="*this" 
+    <view
+      wx:for="{{tabs}}"
+      wx:key="*this"
       class="tab-item {{activeTab === index ? 'active' : ''}}"
       bindtap="onTabClick"
       data-index="{{index}}"
@@ -38,9 +38,8 @@
         <view class="card-footer">
           <view wx:if="{{item.showCouponDiscount}}" class="total-price">优惠: -¥{{item.couponDiscountText}}</view>
           <view class="total-price">实付: ¥{{item.totalPriceText}}</view>
-          
+
           <view class="btn-group">
-            <button class="btn sm" wx:if="{{item.status===1}}" bindtap="onMarkShipped" data-id="{{item.id}}">模拟发货</button>
             <button class="btn sm primary" wx:if="{{item.status===2}}" bindtap="onConfirmReceipt" data-id="{{item.id}}">确认收货</button>
             <button class="btn sm" wx:if="{{item.status===3}}" bindtap="onRefund" data-id="{{item.id}}">申请售后</button>
           </view>

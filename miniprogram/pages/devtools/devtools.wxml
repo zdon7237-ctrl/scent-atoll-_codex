@@ -1,0 +1,71 @@
+<view class="page">
+  <view class="hero card">
+    <view class="hero-title">测试工具</view>
+    <view class="hero-desc">开发版专用。统一注入测试数据，业务页面不再保留测试入口。</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">当前状态</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="stat-value">{{userLevel}}</view>
+        <view class="stat-label">会员等级</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">¥{{currentSpend}}</view>
+        <view class="stat-label">累计消费</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{couponCount}}</view>
+        <view class="stat-label">优惠券数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{orderCount}}</view>
+        <view class="stat-label">订单数</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">快速跳转</view>
+    <view class="button-grid compact-grid">
+      <button size="mini" bindtap="openPage" data-target="/pages/index/index">首页</button>
+      <button size="mini" bindtap="openPage" data-target="/pages/category/category">商品页</button>
+      <button size="mini" bindtap="openPage" data-target="/pages/orders/orders">订单页</button>
+      <button size="mini" bindtap="openPage" data-target="/pages/user/user">我的</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">会员场景</view>
+    <view class="button-grid compact-grid">
+      <button size="mini" bindtap="applyMemberPreset" data-preset="normal">普通会员</button>
+      <button size="mini" bindtap="applyMemberPreset" data-preset="gold">黄金会员</button>
+      <button size="mini" bindtap="applyMemberPreset" data-preset="diamond">钻石会员</button>
+      <button size="mini" bindtap="applyMemberPreset" data-preset="black">黑钻会员</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">测试数据注入</view>
+    <view class="button-grid">
+      <button type="primary" bindtap="injectCoupons">注入测试券包</button>
+      <button type="primary" bindtap="injectOrders">注入测试订单</button>
+      <button type="primary" bindtap="injectCart">注入测试购物车</button>
+      <button type="warn" bindtap="resetAllState">一键重置全部状态</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">商品折扣控制</view>
+    <block wx:for="{{perfumes}}" wx:key="id">
+      <view class="perfume-row">
+        <view class="perfume-meta">
+          <view class="perfume-name">{{item.name}}</view>
+          <view class="perfume-status" style="color: {{item.discountColor}};">{{item.discountLabel}}</view>
+        </view>
+        <switch checked="{{item.discountEnabled}}" bindchange="toggleDiscountStatus" data-id="{{item.id}}" data-key="{{item.overrideKey}}" color="#000" />
+      </view>
+    </block>
+  </view>
+</view>

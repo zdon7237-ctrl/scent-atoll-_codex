@@ -2,7 +2,11 @@
   "name": "miniprogram-ts-quickstart",
   "version": "1.0.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "dev": "node scripts/use-dev-config.js",
+    "release:prepare": "node scripts/use-release-config.js",
+    "check:release": "node scripts/check-release.js"
+  },
   "keywords": [],
   "author": "",
   "license": "",
