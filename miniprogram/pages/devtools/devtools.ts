@@ -1,8 +1,10 @@
 import { IAppOption } from '../../app';
 import { DbManager } from '../../utils/db';
 import { CouponManager, UserCouponRecord } from '../../utils/couponManager';
-import { OrderManager, OrderRecord } from '../../utils/orderManager';
+import { OrderManager } from '../../utils/orderManager';
 import { WalletManager } from '../../utils/walletManager';
+import { AuthService } from '../../utils/authService';
+import { OrderService } from '../../utils/orderService';
 import { createDevtoolCartItems, createDevtoolCoupons, createDevtoolOrders, getMemberSpendPreset } from '../../utils/devtoolsFixtures.js';
 
 const app = getApp<IAppOption>();
@@ -64,6 +66,15 @@ Page({
 
   async loadData() {
     const spend = Number(app.globalData.totalSpend || wx.getStorageSync('totalSpend') || 0);
+    let orderCount = 0;
+
+    try {
+      await AuthService.ensureLogin();
+      const orderResult = await OrderService.listOrders({ page: 1, size: 20 });
+      orderCount = orderResult.list.length;
+    } catch (e) {
+      console.warn('读取云端订单计数失败', e);
+    }
 
     try {
       const perfumes = await DbManager.getPerfumes();
@@ -72,7 +83,7 @@ Page({
         currentSpend: spend,
         userLevel: resolveUserLevel(spend),
         couponCount: CouponManager.getUserCoupons().length,
-        orderCount: OrderManager.getOrders().length
+        orderCount
       });
     } catch (e) {
       console.error('加载测试工具数据失败', e);
@@ -81,7 +92,7 @@ Page({
         currentSpend: spend,
         userLevel: resolveUserLevel(spend),
         couponCount: CouponManager.getUserCoupons().length,
-        orderCount: OrderManager.getOrders().length
+        orderCount
       });
       wx.showToast({ title: '加载失败', icon: 'none' });
     }
@@ -111,11 +122,28 @@ Page({
     wx.showToast({ title: '测试券包已注入', icon: 'success' });
   },
 
-  injectOrders() {
-    const orders = createDevtoolOrders() as OrderRecord[];
-    OrderManager.saveOrders(orders);
-    void this.loadData();
-    wx.showToast({ title: '测试订单已注入', icon: 'success' });
+  async injectOrders() {
+    try {
+      await AuthService.ensureLogin();
+      const fixtures = createDevtoolOrders();
+      for (const item of fixtures) {
+        await OrderService.createOrder({
+          items: item.items,
+          originalPrice: item.originalPrice,
+          memberPrice: item.memberPrice,
+          couponDiscount: item.couponDiscount,
+          finalPrice: item.finalPrice,
+          walletDeduction: item.walletDeduction,
+          payAmount: item.payAmount,
+          couponInfo: item.couponInfo
+        });
+      }
+      await this.loadData();
+      wx.showToast({ title: '测试订单已注入', icon: 'success' });
+    } catch (e) {
+      console.error('注入测试订单失败', e);
+      wx.showToast({ title: '订单注入失败', icon: 'none' });
+    }
   },
 
   async injectCart() {
@@ -132,6 +160,7 @@ Page({
     WalletManager.saveHistory([]);
     DbManager.clearPerfumeOverrides();
     DbManager.clearCache();
+    AuthService.clearCurrentUserCache();
     app.globalData.totalSpend = 0;
     void this.loadData();
     wx.showToast({ title: '测试状态已重置', icon: 'success' });

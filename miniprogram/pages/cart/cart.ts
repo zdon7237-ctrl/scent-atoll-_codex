@@ -1,10 +1,14 @@
-﻿// miniprogram/pages/cart/cart.ts
+// miniprogram/pages/cart/cart.ts
 import { IAppOption } from '../../app';
 import { MemberManager } from '../../utils/memberManager';
-import { PointManager } from '../../utils/pointManager';
-import { OrderManager } from '../../utils/orderManager';
 import { CouponManager } from '../../utils/couponManager';
 import { WalletManager } from '../../utils/walletManager';
+import { AuthService } from '../../utils/authService';
+import { OrderService } from '../../utils/orderService';
+
+const { normalizeCartItems } = require('../../utils/cartViewModel.js') as {
+  normalizeCartItems: (items: any[]) => any[];
+};
 
 const app = getApp<IAppOption>();
 
@@ -28,13 +32,14 @@ Page({
     useWallet: true,
     selectedCount: 0,
     selectedCoupon: null as any,
-    hasDiscount: false
+    hasDiscount: false,
+    isSubmitting: false
   },
 
   onShow() { this.initData(); },
 
   initData() {
-    const cart = wx.getStorageSync('myCart') || [];
+    const cart = normalizeCartItems(wx.getStorageSync('myCart') || []);
     const selectedCoupon = wx.getStorageSync('selectedCoupon') || null;
     const coupons = CouponManager.getUserCoupons();
     const coupon = selectedCoupon
@@ -175,7 +180,9 @@ Page({
     });
   },
 
-  onCheckout() {
+  async onCheckout() {
+    if (this.data.isSubmitting) return;
+
     if (Number(this.data.finalPrice) <= 0 && this.data.selectedCount === 0) {
       wx.showToast({ title: '请选择商品', icon: 'none' });
       return;
@@ -204,54 +211,47 @@ Page({
       return;
     }
 
-    const currentTotalSpend = app.globalData.totalSpend || 0;
-    const checkoutItems = checkedItems.map(item => ({
-      ...item,
-      checkoutPrice: item.allowMemberDiscount !== false
-        ? MemberManager.calculateDiscountPrice(item.price, currentTotalSpend)
-        : item.price
-    }));
+    this.setData({ isSubmitting: true });
+    try {
+      const authResult = await AuthService.ensureLogin();
+      app.globalData.openid = authResult.openid;
+      app.globalData.userId = authResult.userId;
+      app.globalData.currentUser = authResult.profile;
+      app.globalData.totalSpend = authResult.profile.totalSpend;
+      wx.setStorageSync('totalSpend', authResult.profile.totalSpend);
 
-    if (recalculatedWalletDeduction > 0) {
-      const consumeResult = WalletManager.consume(recalculatedWalletDeduction, '购物消费');
-      if (!consumeResult.ok) {
-        this.setData({ walletBalance: consumeResult.balance.toFixed(2) });
-        this.calculateTotal();
-        wx.showToast({ title: '余额已变更，请重新确认订单', icon: 'none' });
-        return;
-      }
-    }
+      const currentTotalSpend = authResult.profile.totalSpend || 0;
+      const checkoutItems = checkedItems.map(item => ({
+        ...item,
+        checkoutPrice: item.allowMemberDiscount !== false
+          ? MemberManager.calculateDiscountPrice(item.price, currentTotalSpend)
+          : item.price
+      }));
 
-    OrderManager.createOrderFromCheckout({
-      items: checkoutItems,
-      originalPrice: this.data.originalPrice,
-      memberPrice: this.data.totalPrice,
-      couponDiscount: this.data.discountAmount,
-      finalPrice: this.data.finalPrice,
-      walletDeduction: recalculatedWalletDeduction.toFixed(2),
-      payAmount: recalculatedPayAmount.toFixed(2),
-      couponInfo: this.data.selectedCoupon,
-      status: 1
-    });
+      await OrderService.createOrder({
+        items: checkoutItems,
+        originalPrice: this.data.originalPrice,
+        memberPrice: this.data.totalPrice,
+        couponDiscount: this.data.discountAmount,
+        finalPrice: this.data.finalPrice,
+        walletDeduction: recalculatedWalletDeduction.toFixed(2),
+        payAmount: recalculatedPayAmount.toFixed(2),
+        couponInfo: this.data.selectedCoupon
+      });
 
-    const points = MemberManager.calculatePoints(expectedFinalPrice, currentTotalSpend);
-    if (points > 0) PointManager.addPoints(points, '购物获得');
-
-    const newSpend = currentTotalSpend + expectedFinalPrice;
-    app.globalData.totalSpend = newSpend;
-    wx.setStorageSync('totalSpend', newSpend);
-
-    if (this.data.selectedCoupon) {
-      CouponManager.markCouponUsed(this.data.selectedCoupon.id);
+      const remaining = normalizeCartItems(this.data.cartList.filter(item => !item.selected));
+      wx.setStorageSync('myCart', remaining);
       wx.removeStorageSync('selectedCoupon');
+
+      wx.showToast({ title: '订单已创建', icon: 'success' });
+      setTimeout(() => {
+        wx.navigateTo({ url: '/pages/orders/orders?type=1' });
+      }, 400);
+    } catch (e) {
+      console.error('创建订单失败', e);
+      wx.showToast({ title: '订单创建失败', icon: 'none' });
+    } finally {
+      this.setData({ isSubmitting: false });
     }
-
-    const remaining = this.data.cartList.filter(item => !item.selected);
-    wx.setStorageSync('myCart', remaining);
-
-    wx.showToast({ title: '支付成功', icon: 'success' });
-    setTimeout(() => {
-      wx.switchTab({ url: '/pages/index/index' });
-    }, 1500);
   }
 });
