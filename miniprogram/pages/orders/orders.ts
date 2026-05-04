@@ -58,6 +58,12 @@ Page({
     void this.loadOrders();
   },
 
+  goToDetail(e: WechatMiniprogram.TouchEvent) {
+    const orderId = String(e.currentTarget.dataset.id || '');
+    if (!orderId) return;
+    wx.navigateTo({ url: `/pages/orderDetail/orderDetail?orderId=${orderId}` });
+  },
+
   onConfirmReceipt() {
     wx.showToast({ title: '确认收货将在下一阶段接入', icon: 'none' });
   },

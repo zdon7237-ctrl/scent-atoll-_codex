@@ -8,6 +8,7 @@
     "pages/user/user",
     "pages/pointShop/pointShop",
     "pages/orders/orders",
+    "pages/orderDetail/orderDetail",
     "pages/detail/detail",
     "pages/wallet/wallet",
     "pages/pointHistory/pointHistory",
@@ -28,32 +29,32 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "images/home.png",
-        "selectedIconPath": "images/home.png"
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
       },
       {
         "pagePath": "pages/category/category",
         "text": "全部商品",
-        "iconPath": "images/home.png",
-        "selectedIconPath": "images/home.png"
+        "iconPath": "images/tab-category.png",
+        "selectedIconPath": "images/tab-category-active.png"
       },
       {
         "pagePath": "pages/brands/brands",
         "text": "分类",
-        "iconPath": "images/home.png",
-        "selectedIconPath": "images/home.png"
+        "iconPath": "images/tab-brand.png",
+        "selectedIconPath": "images/tab-brand-active.png"
       },
       {
         "pagePath": "pages/cart/cart",
         "text": "购物车",
-        "iconPath": "images/home.png",
-        "selectedIconPath": "images/home.png"
+        "iconPath": "images/tab-cart.png",
+        "selectedIconPath": "images/tab-cart-active.png"
       },
       {
         "pagePath": "pages/user/user",
         "text": "我的",
-        "iconPath": "images/home.png",
-        "selectedIconPath": "images/home.png"
+        "iconPath": "images/tab-user.png",
+        "selectedIconPath": "images/tab-user-active.png"
       }
     ]
   },

@@ -1,9 +1,7 @@
 // miniprogram/pages/user/user.ts
-import { PointManager } from '../../utils/pointManager';
 import { MemberManager } from '../../utils/memberManager';
 import { IAppOption } from '../../app';
-import { CouponManager } from '../../utils/couponManager';
-import { WalletManager } from '../../utils/walletManager';
+import { AccountService } from '../../utils/accountService';
 
 const app = getApp<IAppOption>();
 
@@ -30,9 +28,9 @@ Page({
     nextLevelSpend: 0,
     stats: {
       points: 0,
-      coupons: 0,
-      wallet: '0.00'
-    }
+      coupons: 0
+    },
+    accountUnavailable: false
   },
 
   onLoad() {
@@ -40,7 +38,7 @@ Page({
   },
 
   onShow() {
-    this.updateData();
+    void this.updateData();
   },
 
   calcNavBarHeight() {
@@ -56,8 +54,22 @@ Page({
     this.setData({ paddingTop: statusBarHeight + 44 });
   },
 
-  updateData() {
-    const totalSpend = app.globalData.totalSpend || 0;
+  async updateData() {
+    try {
+      const summary = await AccountService.getSummary();
+      app.globalData.totalSpend = summary.totalSpend;
+      wx.setStorageSync('totalSpend', summary.totalSpend);
+      this.setData({ accountUnavailable: false });
+      this.applyAccountStats(summary.totalSpend, summary.points, summary.couponCount);
+    } catch (e) {
+      console.warn('服务端账户摘要加载失败', e);
+      const totalSpend = app.globalData.totalSpend || 0;
+      this.setData({ accountUnavailable: true });
+      this.applyAccountStats(totalSpend, 0, 0);
+    }
+  },
+
+  applyAccountStats(totalSpend: number, points: number, couponCount: number) {
     const currentLevelInfo = MemberManager.getCurrentLevel(totalSpend);
     const upgradeInfo = MemberManager.getUpgradeProgress(totalSpend);
 
@@ -70,22 +82,15 @@ Page({
       nextLevelSpend: upgradeInfo ? upgradeInfo.needSpend : 0,
       currentSwiperIndex: currentIndex,
       userLevelIndex: currentIndex,
-      'stats.points': PointManager.getTotalPoints(),
-      'stats.coupons': this.getValidCouponCount(),
-      'stats.wallet': WalletManager.getBalance().toFixed(2)
+      'stats.points': points,
+      'stats.coupons': couponCount
     });
-  },
-
-  getValidCouponCount() {
-    const coupons = CouponManager.getUserCoupons();
-    return coupons.filter(c => CouponManager.getCouponStatus(c) === 0).length;
   },
 
   onSwiperChange(e: WechatMiniprogram.SwiperChange) {
     this.setData({ currentSwiperIndex: e.detail.current });
   },
 
-  onGoToWallet() { wx.navigateTo({ url: '/pages/wallet/wallet' }); },
   onGoToPointHistory() { wx.navigateTo({ url: '/pages/pointHistory/pointHistory' }); },
   onGoToCoupons() { wx.navigateTo({ url: '/pages/coupons/coupons' }); },
   onGoToPointShop() { wx.navigateTo({ url: '/pages/pointShop/pointShop' }); },

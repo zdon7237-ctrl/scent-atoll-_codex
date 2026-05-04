@@ -13,7 +13,10 @@ Page({
     // UI状态字段
     currentPrice: 0,
     showMemberPrice: false,
-    showExcludedTag: false
+    showExcludedTag: false,
+    topNotes: '',
+    middleNotes: '',
+    baseNotes: ''
   },
 
   async onLoad(options: any) {
@@ -44,6 +47,9 @@ Page({
           currentPrice: finalPrice,
           showMemberPrice: showMemberPrice,
           showExcludedTag: showExcludedTag,
+          topNotes: target.notes.top.join('、'),
+          middleNotes: target.notes.middle.join('、'),
+          baseNotes: target.notes.base.join('、'),
           isLoading: false
         });
 

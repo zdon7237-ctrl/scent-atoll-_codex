@@ -73,11 +73,6 @@
       <view class="stat-num">{{stats.coupons}}</view>
       <view class="stat-label">优惠券</view>
     </view>
-    <view class="stat-line"></view>
-    <view class="stat-item" bindtap="onGoToWallet">
-      <view class="stat-num">{{stats.wallet}}</view>
-      <view class="stat-label">余额</view>
-    </view>
   </view>
 
   <view class="section-card orders-card">

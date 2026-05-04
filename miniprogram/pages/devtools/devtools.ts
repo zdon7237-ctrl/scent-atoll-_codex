@@ -135,7 +135,13 @@ Page({
           finalPrice: item.finalPrice,
           walletDeduction: item.walletDeduction,
           payAmount: item.payAmount,
-          couponInfo: item.couponInfo
+          couponInfo: item.couponInfo,
+          deliveryInfo: {
+            receiverName: '测试用户',
+            phone: '13800000000',
+            address: '测试地址 1 号',
+            note: '开发工具注入'
+          }
         });
       }
       await this.loadData();

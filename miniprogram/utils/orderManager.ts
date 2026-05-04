@@ -1,5 +1,7 @@
 ﻿export type OrderStatus = 0 | 1 | 2 | 3 | 4;
 
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'closed';
+
 const ORDER_STORAGE_KEY = 'myOrders';
 
 export interface OrderItemSnapshot {
@@ -29,6 +31,24 @@ export interface OrderRecord {
   totalPrice: string;
   couponInfo: any | null;
   status: OrderStatus;
+  deliveryInfo: DeliveryInfo;
+  paymentStatus: PaymentStatus;
+  paymentTime: number;
+  shippingInfo: ShippingInfo;
+}
+
+export interface DeliveryInfo {
+  receiverName: string;
+  phone: string;
+  address: string;
+  note?: string;
+}
+
+export interface ShippingInfo {
+  status: 'pending' | 'shipped' | 'delivered';
+  company: string;
+  trackingNo: string;
+  shippedAt: number;
 }
 
 interface CreateOrderPayload {
@@ -41,6 +61,7 @@ interface CreateOrderPayload {
   payAmount?: string;
   couponInfo?: any | null;
   status?: OrderStatus;
+  deliveryInfo: DeliveryInfo;
 }
 
 function toItemSnapshot(item: any): OrderItemSnapshot {
@@ -92,7 +113,16 @@ export const OrderManager = {
       payAmount,
       totalPrice: payload.finalPrice,
       couponInfo: payload.couponInfo || null,
-      status: payload.status ?? 1
+      status: payload.status ?? 0,
+      deliveryInfo: payload.deliveryInfo,
+      paymentStatus: 'pending',
+      paymentTime: 0,
+      shippingInfo: {
+        status: 'pending',
+        company: '',
+        trackingNo: '',
+        shippedAt: 0
+      }
     };
 
     this.saveOrder(order);

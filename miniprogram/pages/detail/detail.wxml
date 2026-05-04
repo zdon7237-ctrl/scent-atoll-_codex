@@ -23,17 +23,26 @@
     <view class="brand">{{info.brand}}</view>
     <view class="name">{{info.name}}</view>
     <view class="desc">{{info.desc}}</view>
+    <view class="meta-row">
+      <text class="meta-pill">{{info.volume}}</text>
+      <text class="meta-pill">{{info.concentration}}</text>
+      <text class="meta-pill" wx:for="{{info.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+    </view>
+  </view>
+
+  <view class="detail-section">
+    <view class="section-title">香调结构</view>
+    <view class="rich-text">
+      <view>前调：{{topNotes}}</view>
+      <view>中调：{{middleNotes}}</view>
+      <view>后调：{{baseNotes}}</view>
+    </view>
   </view>
 
   <view class="detail-section">
     <view class="section-title">香水故事</view>
-    <view class="rich-text">
-      <view>前调：佛手柑、柠檬</view>
-      <view>中调：五月玫瑰、茉莉、依兰</view>
-      <view>后调：橡木苔、广藿香、鸢尾根</view>
-      <view style="margin-top:20rpx; color:#666; line-height:1.6;">
-        这是一款极具艺术感的香水，灵感来源于经典的俄罗斯芭蕾。它复杂、深邃，如同在皮肤上上演的一出宏大歌剧。
-      </view>
+    <view class="rich-text story-text">
+      {{info.story}}
     </view>
   </view>
   

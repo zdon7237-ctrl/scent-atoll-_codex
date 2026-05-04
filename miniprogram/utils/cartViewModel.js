@@ -1,4 +1,4 @@
-const CART_FALLBACK_IMAGE = '/images/home.png';
+const CART_FALLBACK_IMAGE = '/images/perfume-placeholder.png';
 const LEGACY_CART_PLACEHOLDER = '/pages/cart/default.png';
 
 function normalizeCartItems(items) {

@@ -17,9 +17,9 @@ export const brandCategories: CategoryData[] = [
     id: 'hot',
     name: '热门推荐',
     items: [
-      { name: "Roja Dove", letter: "R", logo: "/images/roja_logo.jpg" },
-      { name: "Frederic Malle", letter: "F", logo: "/images/fm_logo.jpg" },
-      { name: "Sultan Pasha", letter: "S", logo: "/images/sultan_logo.jpg" },
+      { name: "Roja Dove", letter: "R", logo: "/images/brand-roja.png" },
+      { name: "Frederic Malle", letter: "F", logo: "/images/brand-fm.png" },
+      { name: "Sultan Pasha", letter: "S", logo: "/images/brand-sultan.png" },
       { name: "Le Labo", letter: "L", logo: "" },
       { name: "Byredo", letter: "B", logo: "" },
       { name: "观夏", letter: "G", logo: "" }
@@ -34,13 +34,13 @@ export const brandCategories: CategoryData[] = [
       { name: "Byredo", letter: "B", logo: "" },
       { name: "Creed", letter: "C", logo: "" },
       { name: "Diptyque", letter: "D", logo: "" },
-      { name: "Frederic Malle", letter: "F", logo: "/images/fm_logo.jpg" },
+      { name: "Frederic Malle", letter: "F", logo: "/images/brand-fm.png" },
       { name: "Jo Malone", letter: "J", logo: "" },
       { name: "Le Labo", letter: "L", logo: "" },
-      { name: "L'Artisan", letter: "L", logo: "/images/lartisan_logo.jpg" },
+      { name: "L'Artisan", letter: "L", logo: "/images/brand-lartisan.png" },
       { name: "Maison Margiela", letter: "M", logo: "" },
       { name: "Penhaligon's", letter: "P", logo: "" },
-      { name: "Roja Dove", letter: "R", logo: "/images/roja_logo.jpg" },
+      { name: "Roja Dove", letter: "R", logo: "/images/brand-roja.png" },
       { name: "Serge Lutens", letter: "S", logo: "" },
       { name: "Tom Ford", letter: "T", logo: "" }
     ]

@@ -223,6 +223,45 @@ page {
 .coupon-value .placeholder { color: #999; }
 .coupon-value .arrow { color: #ccc; margin-left: 10rpx; font-size: 30rpx; }
 
+/* --- Delivery --- */
+.delivery-section {
+  padding: 0 40rpx;
+  margin-top: 30rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #121212;
+  margin-bottom: 10rpx;
+}
+
+.delivery-field {
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.delivery-field:first-of-type {
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.delivery-label {
+  width: 130rpx;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: #555;
+}
+
+.delivery-input {
+  flex: 1;
+  min-width: 0;
+  height: 88rpx;
+  font-size: 26rpx;
+  color: #121212;
+}
+
 /* --- Footer --- */
 .footer-wrapper {
   position: fixed; 

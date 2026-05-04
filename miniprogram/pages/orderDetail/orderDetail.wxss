@@ -1,0 +1,147 @@
+page {
+  background: #f6f6f6;
+  color: #121212;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+.detail-scroll {
+  height: calc(100vh - 120rpx);
+}
+
+.state-tip {
+  padding-top: 180rpx;
+  text-align: center;
+  color: #888;
+  font-size: 28rpx;
+}
+
+.status-band {
+  position: relative;
+  background: #121212;
+  color: #fff;
+  padding: 44rpx 40rpx;
+}
+
+.status-text {
+  font-size: 40rpx;
+  font-weight: 700;
+}
+
+.status-sub {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.copy-btn {
+  position: absolute;
+  right: 32rpx;
+  bottom: 36rpx;
+  height: 52rpx;
+  line-height: 52rpx;
+  padding: 0 24rpx;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  color: #121212;
+  background: #fff;
+}
+
+.section {
+  background: #fff;
+  margin-top: 18rpx;
+  padding: 28rpx 32rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  margin-bottom: 20rpx;
+}
+
+.goods-row {
+  display: flex;
+  align-items: center;
+  min-height: 132rpx;
+  border-bottom: 1rpx solid #f1f1f1;
+}
+
+.goods-row:last-child {
+  border-bottom: 0;
+}
+
+.goods-img {
+  width: 104rpx;
+  height: 104rpx;
+  margin-right: 22rpx;
+  background: #f4f4f4;
+}
+
+.goods-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.goods-name {
+  font-size: 28rpx;
+  color: #222;
+}
+
+.goods-meta,
+.muted-text {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #888;
+}
+
+.goods-price {
+  margin-left: 20rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 56rpx;
+  font-size: 26rpx;
+  color: #555;
+}
+
+.info-row.strong {
+  margin-top: 12rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f1f1f1;
+  color: #121212;
+  font-weight: 700;
+}
+
+.plain-text {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #333;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-top: 1rpx solid #eee;
+  padding: 18rpx 32rpx;
+}
+
+.pay-btn {
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 4rpx;
+  background: #121212;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+}

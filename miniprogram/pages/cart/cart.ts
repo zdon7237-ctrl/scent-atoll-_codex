@@ -2,19 +2,31 @@
 import { IAppOption } from '../../app';
 import { MemberManager } from '../../utils/memberManager';
 import { CouponManager } from '../../utils/couponManager';
-import { WalletManager } from '../../utils/walletManager';
 import { AuthService } from '../../utils/authService';
 import { OrderService } from '../../utils/orderService';
 
 const { normalizeCartItems } = require('../../utils/cartViewModel.js') as {
   normalizeCartItems: (items: any[]) => any[];
 };
+const { validateDeliveryInfo, buildCheckoutSuccessState } = require('../../utils/checkoutViewModel.js') as {
+  validateDeliveryInfo: (input: any) => {
+    ok: boolean;
+    message: string;
+    deliveryInfo: {
+      receiverName: string;
+      phone: string;
+      address: string;
+      note: string;
+    } | null;
+  };
+  buildCheckoutSuccessState: (items: any[]) => {
+    cartList: any[];
+    isAllSelected: boolean;
+    selectedCount: number;
+  };
+};
 
 const app = getApp<IAppOption>();
-
-function formatMoney(value: number) {
-  return Number(value.toFixed(2));
-}
 
 Page({
   data: {
@@ -26,14 +38,17 @@ Page({
     discountAmount: '0.00',
     memberSavings: '0.00',
     finalPrice: '0.00',
-    walletBalance: '0.00',
-    walletDeduction: '0.00',
     payAmount: '0.00',
-    useWallet: true,
     selectedCount: 0,
     selectedCoupon: null as any,
     hasDiscount: false,
-    isSubmitting: false
+    isSubmitting: false,
+    deliveryInfo: {
+      receiverName: '',
+      phone: '',
+      address: '',
+      note: ''
+    }
   },
 
   onShow() { this.initData(); },
@@ -52,8 +67,7 @@ Page({
     const formattedCart = cart.map((item: any) => ({ ...item, x: 0 }));
     this.setData({
       cartList: formattedCart,
-      selectedCoupon: coupon,
-      walletBalance: WalletManager.getBalance().toFixed(2)
+      selectedCoupon: coupon
     });
     this.calculateTotal();
   },
@@ -71,11 +85,6 @@ Page({
     const isAll = !this.data.isAllSelected;
     const newList = this.data.cartList.map(item => ({ ...item, selected: isAll }));
     this.setData({ cartList: newList, isAllSelected: isAll });
-    this.calculateTotal();
-  },
-
-  toggleWalletUsage() {
-    this.setData({ useWallet: !this.data.useWallet });
     this.calculateTotal();
   },
 
@@ -112,11 +121,16 @@ Page({
 
   goToCoupons() { wx.navigateTo({ url: '/pages/coupons/coupons?source=cart' }); },
 
+  onDeliveryInput(e: WechatMiniprogram.Input) {
+    const field = e.currentTarget.dataset.field;
+    if (!field) return;
+    this.setData({ [`deliveryInfo.${field}`]: e.detail.value });
+  },
+
   calculateTotal() {
     const list = this.data.cartList;
     const coupon = this.data.selectedCoupon;
     const totalSpend = app.globalData.totalSpend || 0;
-    const walletBalance = WalletManager.getBalance();
 
     let totalOrigin = 0;
     let totalMember = 0;
@@ -161,9 +175,7 @@ Page({
       }
     }
 
-    const finalBeforeWallet = Math.max(totalMember - couponDiscount, 0);
-    const walletDeduction = this.data.useWallet ? Math.min(walletBalance, finalBeforeWallet) : 0;
-    const payAmount = Math.max(finalBeforeWallet - walletDeduction, 0);
+    const finalPrice = Math.max(totalMember - couponDiscount, 0);
 
     this.setData({
       isAllSelected: isAll,
@@ -172,10 +184,8 @@ Page({
       totalPrice: totalMember.toFixed(2),
       discountAmount: couponDiscount.toFixed(2),
       memberSavings: (totalOrigin - totalMember).toFixed(2),
-      finalPrice: finalBeforeWallet.toFixed(2),
-      walletBalance: walletBalance.toFixed(2),
-      walletDeduction: walletDeduction.toFixed(2),
-      payAmount: payAmount.toFixed(2),
+      finalPrice: finalPrice.toFixed(2),
+      payAmount: finalPrice.toFixed(2),
       hasDiscount: couponDiscount > 0
     });
   },
@@ -183,31 +193,15 @@ Page({
   async onCheckout() {
     if (this.data.isSubmitting) return;
 
-    if (Number(this.data.finalPrice) <= 0 && this.data.selectedCount === 0) {
-      wx.showToast({ title: '请选择商品', icon: 'none' });
-      return;
-    }
-
     const checkedItems = this.data.cartList.filter(item => item.selected);
     if (checkedItems.length === 0) {
       wx.showToast({ title: '请选择商品', icon: 'none' });
       return;
     }
 
-    const latestWalletBalance = WalletManager.getBalance();
-    const expectedFinalPrice = Number(this.data.finalPrice);
-    const recalculatedWalletDeduction = this.data.useWallet
-      ? formatMoney(Math.min(latestWalletBalance, expectedFinalPrice))
-      : 0;
-    const recalculatedPayAmount = formatMoney(Math.max(expectedFinalPrice - recalculatedWalletDeduction, 0));
-
-    if (
-      recalculatedWalletDeduction.toFixed(2) !== this.data.walletDeduction ||
-      recalculatedPayAmount.toFixed(2) !== this.data.payAmount
-    ) {
-      this.setData({ walletBalance: latestWalletBalance.toFixed(2) });
-      this.calculateTotal();
-      wx.showToast({ title: '余额已变更，请重新确认订单', icon: 'none' });
+    const deliveryValidation = validateDeliveryInfo(this.data.deliveryInfo);
+    if (!deliveryValidation.ok || !deliveryValidation.deliveryInfo) {
+      wx.showToast({ title: deliveryValidation.message, icon: 'none' });
       return;
     }
 
@@ -228,24 +222,31 @@ Page({
           : item.price
       }));
 
-      await OrderService.createOrder({
+      const createdOrder = await OrderService.createOrder({
         items: checkoutItems,
         originalPrice: this.data.originalPrice,
         memberPrice: this.data.totalPrice,
         couponDiscount: this.data.discountAmount,
         finalPrice: this.data.finalPrice,
-        walletDeduction: recalculatedWalletDeduction.toFixed(2),
-        payAmount: recalculatedPayAmount.toFixed(2),
-        couponInfo: this.data.selectedCoupon
+        walletDeduction: '0.00',
+        payAmount: this.data.payAmount,
+        couponInfo: this.data.selectedCoupon,
+        deliveryInfo: deliveryValidation.deliveryInfo
       });
 
-      const remaining = normalizeCartItems(this.data.cartList.filter(item => !item.selected));
+      const checkoutSuccessState = buildCheckoutSuccessState(this.data.cartList);
+      const remaining = normalizeCartItems(checkoutSuccessState.cartList);
       wx.setStorageSync('myCart', remaining);
       wx.removeStorageSync('selectedCoupon');
+      this.setData({
+        ...checkoutSuccessState,
+        cartList: remaining,
+        selectedCoupon: null
+      });
 
       wx.showToast({ title: '订单已创建', icon: 'success' });
       setTimeout(() => {
-        wx.navigateTo({ url: '/pages/orders/orders?type=1' });
+        wx.navigateTo({ url: `/pages/orderDetail/orderDetail?orderId=${createdOrder.orderId}` });
       }, 400);
     } catch (e) {
       console.error('创建订单失败', e);

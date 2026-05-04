@@ -1,5 +1,6 @@
 ﻿import { PerfumeItem, allPerfumes } from '../data/perfumes';
 import { BrandItem, CategoryData, brandCategories } from '../data/brands';
+import { PerfumeNotes } from '../data/perfumes';
 
 const CACHE_KEYS = {
   perfumes: 'cache_perfumes',
@@ -20,6 +21,21 @@ interface PerfumeOverrideItem {
 }
 
 type PerfumeOverrideMap = Record<string, PerfumeOverrideItem>;
+
+const DEFAULT_NOTES: PerfumeNotes = {
+  top: [],
+  middle: [],
+  base: []
+};
+
+function cloneNotes(notes?: PerfumeNotes): PerfumeNotes {
+  const source = notes || DEFAULT_NOTES;
+  return {
+    top: Array.isArray(source.top) ? [...source.top] : [],
+    middle: Array.isArray(source.middle) ? [...source.middle] : [],
+    base: Array.isArray(source.base) ? [...source.base] : []
+  };
+}
 
 export type CouponIssueMode = 'auto' | 'code';
 
@@ -54,6 +70,10 @@ function clonePerfume(item: PerfumeItem): PerfumeItem {
   return {
     ...item,
     tags: Array.isArray(item.tags) ? [...item.tags] : [],
+    notes: cloneNotes(item.notes),
+    story: item.story || '',
+    volume: item.volume || '',
+    concentration: item.concentration || '',
     overrideKey: buildOverrideKey(item)
   };
 }
@@ -79,6 +99,10 @@ function mapCloudPerfumes(data: any[]): PerfumeItem[] {
     tags: item.tags || [],
     image: item.image || '',
     stock: item.stock,
+    volume: item.volume || '',
+    concentration: item.concentration || '',
+    notes: cloneNotes(item.notes),
+    story: item.story || item.desc || '',
     allowMemberDiscount: item.allowMemberDiscount,
     overrideKey: buildOverrideKey(item, 'cloud')
   }));

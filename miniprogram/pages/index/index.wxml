@@ -1,20 +1,88 @@
-<view class="price-row" style="display: flex; align-items: baseline; margin-top: 10rpx;">
-  
-  <text style="font-size: 30rpx; font-weight: bold; color: #333;">¥{{item.displayPrice}}</text>
-  
-  <text wx:if="{{item.showMemberTag}}" 
-        style="font-size: 22rpx; color: #999; text-decoration: line-through; margin-left: 8rpx;">
-    ¥{{item.price}}
-  </text>
-
-  <view wx:if="{{item.showMemberTag}}" 
-        style="font-size: 18rpx; background: #000; color: #fff; padding: 2rpx 6rpx; border-radius: 4rpx; margin-left: 8rpx;">
-    VIP
+<view class="storefront">
+  <view class="hero">
+    <view class="hero-copy">
+      <view class="eyebrow">SCENT ATOLL</view>
+      <view class="hero-title">香水岛屿</view>
+      <view class="hero-subtitle">甄选沙龙香、典藏浓香精与日常木质香，按场合找到适合你的气味。</view>
+      <view class="hero-actions">
+        <view class="primary-action" bindtap="goToCategory">浏览全部</view>
+        <view class="secondary-action" bindtap="goToBrands">品牌馆</view>
+      </view>
+    </view>
+    <view class="hero-product" wx:if="{{perfumeList.length > 0}}" bindtap="goToDetail" data-id="{{perfumeList[0].id}}">
+      <image class="hero-img" src="{{perfumeList[0].image}}" mode="aspectFill"></image>
+      <view class="hero-product-info">
+        <text class="hero-brand">{{perfumeList[0].brand}}</text>
+        <text class="hero-name">{{perfumeList[0].name}}</text>
+      </view>
+    </view>
   </view>
-  
-  <view wx:if="{{item.showExcludedTag}}" 
-        style="font-size: 18rpx; background: #f0f0f0; color: #999; padding: 2rpx 6rpx; border-radius: 4rpx; margin-left: 8rpx;">
-    不参与折扣
+
+  <view class="feature-row">
+    <view
+      class="feature-card"
+      wx:for="{{featureTiles}}"
+      wx:key="title"
+      bindtap="onFeatureTap"
+      data-target="{{item.target}}"
+    >
+      <view class="feature-title">{{item.title}}</view>
+      <view class="feature-desc">{{item.desc}}</view>
+    </view>
   </view>
 
+  <view class="section-head">
+    <view>
+      <view class="section-title">精选香水</view>
+      <view class="section-subtitle">热卖、少量现货与新品一起看</view>
+    </view>
+    <view class="section-more" bindtap="goToCategory">全部商品</view>
+  </view>
+
+  <view wx:if="{{isLoading}}" class="state-card">香水加载中...</view>
+
+  <view wx:elif="{{perfumeList.length > 0}}" class="product-list">
+    <view
+      class="product-card"
+      wx:for="{{perfumeList}}"
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="product-image-wrap">
+        <image class="product-image" src="{{item.image}}" mode="aspectFill"></image>
+        <view wx:if="{{item.isNew}}" class="product-badge">NEW</view>
+        <view wx:if="{{item.stock < 5}}" class="stock-badge">仅 {{item.stock}} 件</view>
+      </view>
+      <view class="product-info">
+        <view class="brand">{{item.brand}}</view>
+        <view class="name">{{item.name}}</view>
+        <view class="desc">{{item.desc}}</view>
+        <view class="tag-row">
+          <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+        </view>
+        <view class="price-row">
+          <text class="price">¥{{item.displayPrice}}</text>
+          <text wx:if="{{item.showMemberTag}}" class="origin-price">¥{{item.price}}</text>
+          <text wx:if="{{item.showMemberTag}}" class="vip-tag">会员价</text>
+          <text wx:if="{{item.showExcludedTag}}" class="excluded-tag">不参与折扣</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="state-card">
+    <view class="state-title">暂未加载到商品</view>
+    <view class="state-desc">下拉刷新或稍后再试。</view>
+  </view>
+
+  <view class="member-band" bindtap="goToMember">
+    <view>
+      <view class="member-title">会员权益</view>
+      <view class="member-desc">消费累计等级，享会员价、积分和礼券权益。</view>
+    </view>
+    <view class="member-action">查看</view>
+  </view>
+
+  <view class="bottom-space"></view>
 </view>

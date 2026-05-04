@@ -20,6 +20,38 @@ function toItemSnapshot(item) {
   };
 }
 
+function normalizeDeliveryInfo(deliveryInfo) {
+  const receiverName = String(deliveryInfo?.receiverName || '').trim();
+  const phone = String(deliveryInfo?.phone || '').trim();
+  const address = String(deliveryInfo?.address || '').trim();
+  const note = String(deliveryInfo?.note || '').trim();
+
+  if (!receiverName || !phone || !address) {
+    throw new Error('deliveryInfo receiverName, phone, and address are required');
+  }
+
+  return {
+    receiverName,
+    phone,
+    address,
+    note
+  };
+}
+
+function buildPendingShippingInfo() {
+  return {
+    status: 'pending',
+    company: '',
+    trackingNo: '',
+    shippedAt: 0
+  };
+}
+
+function normalizeMoneyString(value, fallback = '0.00') {
+  const num = Number(value ?? fallback);
+  return Number.isFinite(num) ? num.toFixed(2) : fallback;
+}
+
 function createOrderRecord({ userId, openid, payload, now = Date.now(), randomDigits } = {}) {
   if (!userId) throw new Error('userId is required');
   if (!openid) throw new Error('openid is required');
@@ -28,22 +60,29 @@ function createOrderRecord({ userId, openid, payload, now = Date.now(), randomDi
   }
 
   const items = payload.items.map(toItemSnapshot);
+  const deliveryInfo = normalizeDeliveryInfo(payload.deliveryInfo);
+  const finalPrice = normalizeMoneyString(payload.finalPrice || payload.memberPrice || payload.originalPrice);
   return {
     userId,
     openid,
     orderNo: buildOrderNo({ now, randomDigits }),
     status: 0,
+    paymentStatus: 'pending',
+    paymentTime: 0,
+    shippingInfo: buildPendingShippingInfo(),
     createTime: now,
     items,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
     originalPrice: String(payload.originalPrice || '0.00'),
     memberPrice: String(payload.memberPrice || payload.originalPrice || '0.00'),
     couponDiscount: String(payload.couponDiscount || '0.00'),
-    finalPrice: String(payload.finalPrice || payload.memberPrice || payload.originalPrice || '0.00'),
-    walletDeduction: String(payload.walletDeduction || '0.00'),
-    payAmount: String(payload.payAmount || payload.finalPrice || payload.memberPrice || payload.originalPrice || '0.00'),
-    totalPrice: String(payload.finalPrice || payload.memberPrice || payload.originalPrice || '0.00'),
-    couponInfo: payload.couponInfo || null
+    finalPrice,
+    pricingStatus: 'client_snapshot_unverified',
+    walletDeduction: '0.00',
+    payAmount: finalPrice,
+    totalPrice: finalPrice,
+    couponInfo: payload.couponInfo || null,
+    deliveryInfo
   };
 }
 

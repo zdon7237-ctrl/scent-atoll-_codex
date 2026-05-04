@@ -24,6 +24,19 @@ page { background: #f7f7f7; padding-bottom: 0; }
 .brand { font-size: 28rpx; color: #666; letter-spacing: 2rpx; margin-bottom: 10rpx; }
 .name { font-size: 40rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; }
 .desc { font-size: 28rpx; color: #888; line-height: 1.5; }
+.meta-row {
+  margin-top: 22rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+.meta-pill {
+  background: #f4efe6;
+  color: #6a5748;
+  border-radius: 6rpx;
+  padding: 8rpx 14rpx;
+  font-size: 22rpx;
+}
 
 .detail-section {
   background: #fff;
@@ -37,6 +50,7 @@ page { background: #f7f7f7; padding-bottom: 0; }
   margin-bottom: 30rpx;
 }
 .rich-text { font-size: 28rpx; color: #333; line-height: 1.8; }
+.story-text { color: #66584d; }
 
 /* 底部栏 */
 .bottom-bar {

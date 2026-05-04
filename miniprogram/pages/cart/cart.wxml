@@ -58,6 +58,51 @@
       </block>
     </view>
 
+    <view class="delivery-section" wx:if="{{!isEditMode}}">
+      <view class="section-title">收货信息</view>
+      <view class="delivery-field">
+        <text class="delivery-label">收货人</text>
+        <input
+          class="delivery-input"
+          placeholder="请输入姓名"
+          value="{{deliveryInfo.receiverName}}"
+          data-field="receiverName"
+          bindinput="onDeliveryInput"
+        />
+      </view>
+      <view class="delivery-field">
+        <text class="delivery-label">手机号</text>
+        <input
+          class="delivery-input"
+          type="number"
+          placeholder="请输入手机号"
+          value="{{deliveryInfo.phone}}"
+          data-field="phone"
+          bindinput="onDeliveryInput"
+        />
+      </view>
+      <view class="delivery-field">
+        <text class="delivery-label">地址</text>
+        <input
+          class="delivery-input"
+          placeholder="请输入详细地址"
+          value="{{deliveryInfo.address}}"
+          data-field="address"
+          bindinput="onDeliveryInput"
+        />
+      </view>
+      <view class="delivery-field">
+        <text class="delivery-label">备注</text>
+        <input
+          class="delivery-input"
+          placeholder="选填"
+          value="{{deliveryInfo.note}}"
+          data-field="note"
+          bindinput="onDeliveryInput"
+        />
+      </view>
+    </view>
+
     <view class="coupon-section" bindtap="goToCoupons" wx:if="{{!isEditMode}}">
       <view class="coupon-row">
         <view class="coupon-label">
@@ -68,20 +113,6 @@
           <text wx:if="{{hasDiscount}}" class="discount-text">-¥{{discountAmount}}</text>
           <text wx:else class="placeholder">{{selectedCoupon ? selectedCoupon.name : '选择优惠券'}}</text>
           <text class="arrow">›</text>
-        </view>
-      </view>
-    </view>
-
-    <view class="coupon-section" wx:if="{{!isEditMode}}">
-      <view class="coupon-row">
-        <view class="coupon-label" bindtap="toggleWalletUsage">
-          <text class="icon">¥</text>
-          <text>钱包余额</text>
-        </view>
-        <view class="coupon-value" bindtap="toggleWalletUsage">
-          <text class="placeholder">余额 ¥{{walletBalance}}</text>
-          <text class="discount-text" wx:if="{{Number(walletDeduction) > 0}}">-¥{{walletDeduction}}</text>
-          <text class="arrow">{{useWallet ? '已使用' : '未使用'}}</text>
         </view>
       </view>
     </view>
@@ -100,10 +131,6 @@
             <view class="main-price-row">
               <text class="total-label">优惠后</text>
               <text class="total-price">¥{{finalPrice}}</text>
-            </view>
-            <view class="main-price-row" wx:if="{{Number(walletDeduction) > 0}}">
-              <text class="total-label">钱包抵扣</text>
-              <text class="total-price">-¥{{walletDeduction}}</text>
             </view>
             <view class="main-price-row">
               <text class="total-label">还需支付</text>

@@ -15,7 +15,7 @@
     <view wx:if="{{isLoading}}" class="empty-tip">订单加载中...</view>
 
     <block wx:elif="{{displayOrders.length > 0}}">
-      <view class="order-card" wx:for="{{displayOrders}}" wx:key="_id">
+      <view class="order-card" wx:for="{{displayOrders}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
         <view class="card-header">
           <text class="order-time">{{item.createTimeText}}</text>
           <text class="status-text" wx:if="{{item.status===0}}">待付款</text>
@@ -42,8 +42,8 @@
           <view class="total-price">实付: ¥{{item.totalPriceText}}</view>
 
           <view class="btn-group">
-            <button class="btn sm primary" wx:if="{{item.status===2}}" bindtap="onConfirmReceipt" data-id="{{item._id}}">确认收货</button>
-            <button class="btn sm" wx:if="{{item.status===3}}" bindtap="onRefund" data-id="{{item._id}}">申请售后</button>
+            <button class="btn sm primary" wx:if="{{item.status===2}}" catchtap="onConfirmReceipt" data-id="{{item._id}}">确认收货</button>
+            <button class="btn sm" wx:if="{{item.status===3}}" catchtap="onRefund" data-id="{{item._id}}">申请售后</button>
           </view>
         </view>
       </view>

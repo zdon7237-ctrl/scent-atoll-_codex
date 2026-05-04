@@ -9,7 +9,12 @@ const app = getApp<IAppOption>();
 Page({
   data: {
     perfumeList: [] as any[],
-    isLoading: false
+    isLoading: false,
+    featureTiles: [
+      { title: '全部香水', desc: '按价格、销量和新品筛选', target: 'category' },
+      { title: '品牌馆', desc: '小众沙龙与经典商业线', target: 'brands' },
+      { title: '会员权益', desc: '积分、礼券和会员价', target: 'member' }
+    ]
   },
 
   onLoad() {
@@ -84,5 +89,30 @@ Page({
   goToDetail(e: any) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` });
+  },
+
+  goToCategory() {
+    wx.switchTab({ url: '/pages/category/category' });
+  },
+
+  goToBrands() {
+    wx.switchTab({ url: '/pages/brands/brands' });
+  },
+
+  goToMember() {
+    wx.switchTab({ url: '/pages/user/user' });
+  },
+
+  onFeatureTap(e: any) {
+    const target = e.currentTarget.dataset.target;
+    if (target === 'category') {
+      this.goToCategory();
+      return;
+    }
+    if (target === 'brands') {
+      this.goToBrands();
+      return;
+    }
+    this.goToMember();
   }
 });
